@@ -1,0 +1,172 @@
+HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Pacifico&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --secondary: #4ecdc4;
+            --accent: #ffe66d;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fceabb 0%, #f8b500 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 600px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 { font-family: 'Pacifico', cursive; color: var(--primary); font-size: 3rem; }
+        .message { font-family: 'Dancing Script', cursive; font-size: 1.5rem; margin: 20px 0; }
+
+        /* Candle Section */
+        #candle-container { margin: 30px 0; cursor: pointer; }
+        .candle {
+            width: 40px;
+            height: 120px;
+            background: var(--secondary);
+            margin: 0 auto;
+            position: relative;
+            border-radius: 5px;
+        }
+        .flame {
+            width: 20px;
+            height: 35px;
+            background: orange;
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            top: -40px;
+            left: 10px;
+            box-shadow: 0 0 20px orange;
+            animation: flicker 0.1s infinite alternate;
+        }
+        @keyframes flicker {
+            from { transform: scale(1); }
+            to { transform: scale(1.1) rotate(2deg); }
+        }
+
+        #surprise { display: none; font-weight: bold; color: var(--primary); font-size: 1.5rem; margin-top: 20px; }
+
+        /* Gallery & Guestbook */
+        .section { background: white; width: 100%; max-width: 600px; padding: 20px; border-radius: 20px; margin-bottom: 20px; }
+        .memory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .memory-grid img { width: 100%; border-radius: 10px; }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bday-song" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="card">
+        <h1>Happy Birthday!</h1>
+        <div class="message">To someone incredible — may your day be as bright and beautiful as your smile!</div>
+        
+        <div id="candle-container" onclick="blowOut()">
+            <div class="candle">
+                <div class="flame" id="flame"></div>
+            </div>
+            <p><small>Click to "Blow Out" the candle!</small></p>
+        </div>
+
+        <div id="surprise">🎁 SURPRISE: You've won a lifetime supply of hugs! 🎂</div>
+    </div>
+
+    <div class="section">
+        <h3>Memory Gallery</h3>
+        <input type="file" id="imgInput" accept="image/*" onchange="uploadImage()">
+        <div class="memory-grid" id="gallery"></div>
+    </div>
+
+    <div class="section">
+        <h3>Guestbook</h3>
+        <input type="text" id="guestName" placeholder="Your Name">
+        <input type="text" id="guestWish" placeholder="Your Wish & Stickers (🎈🎂✨)">
+        <button onclick="addWish()" style="margin-top: 10px;">Leave a Note</button>
+        <div id="wishes" style="text-align: left; margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        // 1. Confetti Launch
+        window.onload = () => {
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            // Try to play music (browsers often block auto-play until first click)
+            document.body.onclick = () => { document.getElementById('bday-song').play(); };
+        };
+
+        // 2. Blow out candle logic
+        function blowOut() {
+            document.getElementById('flame').style.display = 'none';
+            document.getElementById('surprise').style.display = 'block';
+            confetti({
+                particleCount: 100,
+                spread: 100,
+                colors: ['#ff6b6b', '#ffe66d']
+            });
+        }
+
+        // 3. Gallery Upload
+        function uploadImage() {
+            const input = document.getElementById('imgInput');
+            const gallery = document.getElementById('gallery');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    gallery.appendChild(img);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 4. Guestbook
+        function addWish() {
+            const name = document.getElementById('guestName').value;
+            const wish = document.getElementById('guestWish').value;
+            if (name && wish) {
+                const note = document.createElement('p');
+                note.innerHTML = `<strong>${name}:</strong> ${wish}`;
+                document.getElementById('wishes').appendChild(note);
+                document.getElementById('guestName').value = '';
+                document.getElementById('guestWish').value = '';
+            }
+        }
+    </script>
+</body>
+</html>
